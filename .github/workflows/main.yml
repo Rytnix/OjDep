@@ -40,8 +40,8 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
     - name: List containers using port 80
       run: |
-          CONTAINER_IDS=$(docker ps -q -f "expose=80")
-          echo "Containers using port 80: $CONTAINER_IDS"
+          CONTAINER_IDS=$(docker ps -q -f "expose=5000")
+          echo "Containers using port 5000: $CONTAINER_IDS"
           echo "::set-output name=container_ids::$CONTAINER_IDS"
 
     - name: Stop containers using port 80
@@ -51,7 +51,7 @@ jobs:
           if [ -n "$CONTAINER_IDS" ]; then
             docker stop $CONTAINER_IDS
           else
-            echo "No containers using port 80 found."
+            echo "No containers using port 5000 found."
           fi
     - name: Delete Stopped Containers
       id: delete-containers
