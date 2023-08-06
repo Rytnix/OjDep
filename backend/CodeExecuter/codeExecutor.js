@@ -82,7 +82,7 @@ const execute = (id, testInput, language) => {
     });
     cmd.stdout.on("data", (data) => {
       const exOut = `${data}`.trim();
-      console.log(exOut);
+      logger.log(`this is the output ${exOut}`);
       resolve(exOut);
     });
     cmd.on("exit", (exitCode, signal) => {});
