@@ -47,7 +47,7 @@ const details = {
 const initAllDockerContainers = () => logger.log("No Docker required !");
 
 // Compile
-const compile = async (filename, language) => {
+const compile = (filename, language) => {
   const id = filename.split(".")[0];
   const command = details[language].compilerCmd
     ? details[language].compilerCmd(id)
@@ -64,13 +64,13 @@ const compile = async (filename, language) => {
 };
 
 // Execute
-const execute = async (id, testInput, language) => {
+const execute = (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
   return new Promise((resolve, reject) => {
     if (!command) return reject("Language Not Supported");
-    const cmd =  spawn(command, { shell: true });
+    const cmd = spawn(command, { shell: true });
     cmd.on("spawn", () => {});
     cmd.stdin.on("error", (err) => {
       reject({ msg: "on stdin error", error: `${err}` });
@@ -80,9 +80,8 @@ const execute = async (id, testInput, language) => {
     cmd.stderr.on("data", (data) => {
       reject({ msg: "on stderr", stderr: `${data}` });
     });
-      cmd.stdout.on("data",  (data) => {
+    cmd.stdout.on("data", (data) => {
       const exOut = `${data}`.trim();
-      logger.log(`this is the output ${exOut}`);
       resolve(exOut);
     });
     cmd.on("exit", (exitCode, signal) => {});
@@ -141,7 +140,7 @@ ${exOut}`;
 const languageErrMsg = `Please select a language / valid language.
 Or may be this language is not yet supported !`;
 
-const execCodeAgainstTestcases = async (filePath, testcase, language) => {
+const execCodeAgainstTestcases = (filePath, testcase, language) => {
   // check if language is supported or not
   if (!details[language]) return { msg: languageErrMsg };
 
@@ -149,7 +148,7 @@ const execCodeAgainstTestcases = async (filePath, testcase, language) => {
     filePath = path.join(codeDirectory, filePath);
 
   const { input, output } = require(`./testcases/${testcase}`);
-  console.log("In execcode ",input,output)
+
   return new Promise(async (resolve, reject) => {
     let filename = null;
     try {
@@ -164,7 +163,6 @@ const execCodeAgainstTestcases = async (filePath, testcase, language) => {
             : input[index],
           language
         );
-       
         if (exOut !== output[index]) {
           reject({
             msg: "on wrong answer",
@@ -209,7 +207,7 @@ const execCodeAgainstTestcases = async (filePath, testcase, language) => {
 
 const execCode = async (filePath, language, inputString) => {
   if (!inputString) inputString = "";
-  
+
   // check if language is supported or not
   if (!details[language]) return { msg: languageErrMsg };
 
@@ -260,3 +258,4 @@ module.exports = {
   execCodeAgainstTestcases,
   initAllDockerContainers,
 };
+
