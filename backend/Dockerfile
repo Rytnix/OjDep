@@ -1,7 +1,5 @@
 FROM node:12
-RUN apt-get update && \
-    apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common && \
-    apt-get update && \
+RUN apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common && \
     apt-get install -y  redis-server && \ 
      apt install default-jdk -y && \
      apt install default-jre -y && \
