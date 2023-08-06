@@ -41,11 +41,17 @@ jobs:
      
     - name: SSH into EC2 instance
       uses: appleboy/ssh-action@master
+      env:
+            ECR_REGISTRY_PULL: ${{ steps.login-ecr.outputs.registry }}
+            ECR_REPOSITORY_PULL: algo-ubackend
+            IMAGE_TAG: latest
+            DOCKERFILE_DIR: ./backend
       with:
           host: ${{ secrets.EC2_HOST }}  # IP address or hostname of your EC2 instance
           username: ${{ secrets.EC2_USERNAME }}  # SSH username for your EC2 instance
           key: ${{ secrets.EC2_SSH_KEY }}  # SSH private key for connecting to the instance
           port: 22
+          
           script: |
            ECR_LOGIN_COMMAND=$(aws ecr get-login-password --region ap-south-1)
            $ECR_LOGIN_COMMAND
@@ -56,8 +62,10 @@ jobs:
             else
               echo "No containers using port 5000 found."
             fi
-            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-            docker run -d -p 5000:5000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            echo $ECR_REGISTRY_PULL
+            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  
+            docker tag $ECR_REGISTRY_PULL/$ECR_REPOSITORY_PULL:$IMAGE_TAG OJ_BACKEND:latest
+            docker run -d -p 5000:5000 OJ_BACKEND:latest
 
     # - name: Pull and run new Docker container
     #   run: |
