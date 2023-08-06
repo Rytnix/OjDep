@@ -82,6 +82,7 @@ const execute = (id, testInput, language) => {
     });
     cmd.stdout.on("data", (data) => {
       const exOut = `${data}`.trim();
+      console.log(exOut);
       resolve(exOut);
     });
     cmd.on("exit", (exitCode, signal) => {});
@@ -148,7 +149,7 @@ const execCodeAgainstTestcases = (filePath, testcase, language) => {
     filePath = path.join(codeDirectory, filePath);
 
   const { input, output } = require(`./testcases/${testcase}`);
-
+  console.log("In execcode ",input,output)
   return new Promise(async (resolve, reject) => {
     let filename = null;
     try {
@@ -207,7 +208,7 @@ const execCodeAgainstTestcases = (filePath, testcase, language) => {
 
 const execCode = async (filePath, language, inputString) => {
   if (!inputString) inputString = "";
-
+  
   // check if language is supported or not
   if (!details[language]) return { msg: languageErrMsg };
 
