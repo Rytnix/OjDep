@@ -47,7 +47,7 @@ const details = {
 const initAllDockerContainers = () => logger.log("No Docker required !");
 
 // Compile
-const compile = (filename, language) => {
+const compile = async (filename, language) => {
   const id = filename.split(".")[0];
   const command = details[language].compilerCmd
     ? details[language].compilerCmd(id)
@@ -141,7 +141,7 @@ ${exOut}`;
 const languageErrMsg = `Please select a language / valid language.
 Or may be this language is not yet supported !`;
 
-const execCodeAgainstTestcases = (filePath, testcase, language) => {
+const execCodeAgainstTestcases = async (filePath, testcase, language) => {
   // check if language is supported or not
   if (!details[language]) return { msg: languageErrMsg };
 
@@ -164,6 +164,11 @@ const execCodeAgainstTestcases = (filePath, testcase, language) => {
             : input[index],
           language
         );
+        setTimeout(function() {
+          console.log("Paused for 2 seconds.");
+          
+          // Code to resume execution after pause
+        }, 3000);
         if (exOut !== output[index]) {
           reject({
             msg: "on wrong answer",
