@@ -64,13 +64,13 @@ const compile = (filename, language) => {
 };
 
 // Execute
-const execute = (id, testInput, language) => {
+const execute = async (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
   return new Promise((resolve, reject) => {
     if (!command) return reject("Language Not Supported");
-    const cmd = spawn(command, { shell: true });
+    const cmd =  spawn(command, { shell: true });
     cmd.on("spawn", () => {});
     cmd.stdin.on("error", (err) => {
       reject({ msg: "on stdin error", error: `${err}` });
@@ -80,7 +80,7 @@ const execute = (id, testInput, language) => {
     cmd.stderr.on("data", (data) => {
       reject({ msg: "on stderr", stderr: `${data}` });
     });
-    cmd.stdout.on("data", (data) => {
+      cmd.stdout.on("data",  (data) => {
       const exOut = `${data}`.trim();
       logger.log(`this is the output ${exOut}`);
       resolve(exOut);
