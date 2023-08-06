@@ -68,7 +68,10 @@ const execute = async (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
-  return new Promise((resolve, reject) => {
+
+    log("this is exec cmd ",command);
+    log(testInput,language,id)
+  return Promise((resolve, reject) => {
     if (!command) return reject("Language Not Supported");
     const cmd =  spawn(command, { shell: true });
     cmd.on("spawn", () => {});
@@ -80,6 +83,7 @@ const execute = async (id, testInput, language) => {
     cmd.stderr.on("data", (data) => {
       reject({ msg: "on stderr", stderr: `${data}` });
     });
+      
       cmd.stdout.on("data",  (data) => {
       const exOut = `${data}`.trim();
       logger.log(`this is the output ${exOut}`);
@@ -164,11 +168,7 @@ const execCodeAgainstTestcases = async (filePath, testcase, language) => {
             : input[index],
           language
         );
-        setTimeout(function() {
-          console.log("Paused for 2 seconds.");
-          
-          // Code to resume execution after pause
-        }, 3000);
+       
         if (exOut !== output[index]) {
           reject({
             msg: "on wrong answer",
