@@ -68,6 +68,7 @@ const execute = (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
+    logger.log("i am on ",id,testInput,language)
   return new Promise((resolve, reject) => {
     if (!command) return reject("Language Not Supported");
     const cmd = spawn(command, { shell: true });
