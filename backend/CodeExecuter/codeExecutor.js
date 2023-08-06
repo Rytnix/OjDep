@@ -3,7 +3,8 @@ const path = require("path");
 const { v4: uuid } = require("uuid");
 const { dateTimeNowFormated, logger } = require("../utils");
 const { exec, spawn } = require("child_process");
-const { log } = require("console");
+const { log, error } = require("console");
+const { stdout, stderr } = require("process");
 
 // ####################################################################################
 // ####################################################################################
@@ -96,6 +97,37 @@ const execute = (id, testInput, language) => {
   });
 };
 
+const executeCmd = (id, testInput, language) => {
+  const command = details[language].executorCmd
+    ? details[language].executorCmd(id)
+    : null;
+  logger.log("i am on ", id, testInput, language);
+
+  return new Promise((resolve, reject) => {
+    if (!command) return reject("Language Not Supported");
+
+        // Assuming 'id' is an argument to the command
+
+    exec(command, { shell: true, input: testInput }, (error, stdout, stderr) => {
+      if (error) {
+        reject({ msg: "on error", error: `${error.name} => ${error.message}` });
+        return;
+      }
+
+      if (stderr) {
+        reject({ msg: "on stderr", stderr: `${stderr}` });
+        return;
+      }
+
+      const exOut = stdout.trim();
+      resolve(exOut);
+    });
+  });
+};
+
+
+
+
 if (!fs.existsSync(codeDirectory)) {
   fs.mkdirSync(codeDirectory, { recursive: true });
 }
@@ -164,6 +196,14 @@ const execCodeAgainstTestcases = (filePath, testcase, language) => {
             : input[index],
           language
         );
+const ans = await executeCmd(
+          compiledId,
+          details[language].inputFunction
+            ? details[language].inputFunction(input[index])
+            : input[index],
+          language
+        );
+        logger.log("with exec output is " ,ans)
         if (exOut !== output[index]) {
           reject({
             msg: "on wrong answer",
