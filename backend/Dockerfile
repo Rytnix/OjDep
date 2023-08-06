@@ -16,4 +16,4 @@ RUN npm install
 
 EXPOSE 5000
 
-CMD ["/bin/bash", "-c", "redis-server & npm start"]
+CMD ["/bin/bash", "-c", "redis-server & npm run prod"]
