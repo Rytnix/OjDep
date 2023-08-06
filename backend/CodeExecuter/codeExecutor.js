@@ -65,7 +65,7 @@ const compile = (filename, language) => {
 };
 
 // Execute
-const execute = (id, testInput, language) => {
+const execute = async (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
@@ -97,7 +97,7 @@ const execute = (id, testInput, language) => {
   });
 };
 
-const executeCmd = (id, testInput, language) => {
+const executeCmd = async (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
@@ -173,7 +173,7 @@ ${exOut}`;
 const languageErrMsg = `Please select a language / valid language.
 Or may be this language is not yet supported !`;
 
-const execCodeAgainstTestcases = (filePath, testcase, language) => {
+const execCodeAgainstTestcases = async (filePath, testcase, language) => {
   // check if language is supported or not
   if (!details[language]) return { msg: languageErrMsg };
 
