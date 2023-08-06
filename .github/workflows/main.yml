@@ -63,9 +63,9 @@ jobs:
               echo "No containers using port 5000 found."
             fi
             echo $ECR_REGISTRY_PULL
-            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  
-            docker tag $ECR_REGISTRY_PULL/$ECR_REPOSITORY_PULL:$IMAGE_TAG OJ_BACKEND:latest
-            docker run -d -p 5000:5000 OJ_BACKEND:latest
+            docker push 067265652073.dkr.ecr.ap-south-1.amazonaws.com/algo-ubackend:latest 
+            docker tag 067265652073.dkr.ecr.ap-south-1.amazonaws.com/algo-ubackend:latest   oj_backend:latest
+            docker run -d -p 5000:5000 oj_backend:latest
 
     # - name: Pull and run new Docker container
     #   run: |
