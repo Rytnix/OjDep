@@ -38,3 +38,35 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $DOCKERFILE_DIR
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - name: List containers using port 80
+      run: |
+          CONTAINER_IDS=$(docker ps -q -f "expose=80")
+          echo "Containers using port 80: $CONTAINER_IDS"
+          echo "::set-output name=container_ids::$CONTAINER_IDS"
+
+    - name: Stop containers using port 80
+      id: stop-containers
+      run: |
+          CONTAINER_IDS=${{ steps.list-containers.outputs.container_ids }}
+          if [ -n "$CONTAINER_IDS" ]; then
+            docker stop $CONTAINER_IDS
+          else
+            echo "No containers using port 80 found."
+          fi
+    - name: Delete Stopped Containers
+      id: delete-containers
+      run: |
+         docker container prune --force
+     
+    - name: SSH into EC2 instance
+      uses: appleboy/ssh-action@master
+      with:
+          host: ${{ secrets.EC2_HOST }}  # IP address or hostname of your EC2 instance
+          username: ${{ secrets.EC2_USERNAME }}  # SSH username for your EC2 instance
+          key: ${{ secrets.EC2_SSH_KEY }}  # SSH private key for connecting to the instance
+          port: 22
+          script: |
+            
+            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            docker run -d -p 5000:5000 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
