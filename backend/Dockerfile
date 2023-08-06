@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:12
 RUN apt-get update && \
     apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common && \
     apt-get update && \
@@ -16,4 +16,4 @@ RUN npm install
 
 EXPOSE 5000
 
-CMD ["/bin/bash", "-c", "redis-server & npm start"]
+CMD ["/bin/bash", "-c", "redis-server & npm run prod"]

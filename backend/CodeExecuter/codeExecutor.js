@@ -65,37 +65,44 @@ const compile = (filename, language) => {
 };
 
 // Execute
-const execute = (id, testInput, language) => {
+const execute = async (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
-    logger.log("i am on ",id,testInput,language,command)
-     
-  return new Promise((resolve, reject) => {
-    if (!command) return reject("Language Not Supported");
-    const cmd = spawn(command, { shell: true });
-    cmd.on("spawn", () => {});
-    cmd.stdin.on("error", (err) => {
-      reject({ msg: "on stdin error", error: `${err}` });
-    });
-    cmd.stdin.write(testInput);
-    cmd.stdin.end();
-    cmd.stderr.on("data", (data) => {
-      reject({ msg: "on stderr", stderr: `${data}` });
-    });
-    cmd.stdout.on("data", (data) => {
-      const exOut = `${data}`.trim();
-      resolve(exOut);
-    });
-    cmd.on("exit", (exitCode, signal) => {});
-    cmd.on("error", (error) => {
-      reject({ msg: "on error", error: `${error.name} => ${error.message}` });
-    });
-    cmd.on("close", (code) => {
-      // logger.log(`child process exited with code ${code} `);
-      resolve("");
-    });
-  });
+      
+    console.log("this is cmd" ,command);
+    const result = await execm(`${command} < ../a.txt`);
+    console.log("this is e" ,result.stderr);
+    
+    if(result.stderr){
+      return result.stderr;
+    }
+    return result.stdout.trim();
+  // return new Promise((resolve, reject) => {
+  //   if (!command) return reject("Language Not Supported");
+  //   const cmd = spawn(command, { shell: true });
+  //   cmd.on("spawn", () => {});
+  //   cmd.stdin.on("error", (err) => {
+  //     reject({ msg: "on stdin error", error: `${err}` });
+  //   });
+  //   cmd.stdin.write(testInput);
+  //   cmd.stdin.end();
+  //   cmd.stderr.on("data", (data) => {
+  //     reject({ msg: "on stderr", stderr: `${data}` });
+  //   });
+  //   cmd.stdout.on("data", (data) => {
+  //     const exOut = `${data}`.trim();
+  //     resolve(exOut);
+  //   });
+  //   cmd.on("exit", (exitCode, signal) => {});
+  //   cmd.on("error", (error) => {
+  //     reject({ msg: "on error", error: `${error.name} => ${error.message}` });
+  //   });
+  //   cmd.on("close", (code) => {
+  //     // logger.log(`child process exited with code ${code} `);
+  //     resolve("");
+  //   });
+  // });
 };
 
 
