@@ -65,7 +65,7 @@ const compile = (filename, language) => {
 };
 
 // Execute
-const execute = async (id, testInput, language) => {
+const execute = (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
@@ -97,31 +97,39 @@ const execute = async (id, testInput, language) => {
   });
 };
 
-const executeCmd = async (id, testInput, language) => {
+const executeCmd = (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
-  logger.log("i am on ", id, testInput, language);
-
   return new Promise((resolve, reject) => {
     if (!command) return reject("Language Not Supported");
-
-        // Assuming 'id' is an argument to the command
-
-    exec(command, { shell: true, input: testInput }, (error, stdout, stderr) => {
-      if (error) {
-        reject({ msg: "on error", error: `${error.name} => ${error.message}` });
-        return;
-      }
-
-      if (stderr) {
-        reject({ msg: "on stderr", stderr: `${stderr}` });
-        return;
-      }
-
-      const exOut = stdout.trim();
-      resolve(exOut);
-    });
+      logger.log(command)
+      //  exec("", (error,stdout,stderr) =>{
+           
+      //  });
+      resolve("");
+    // const cmd = spawn(command, { shell: true });
+    // cmd.on("spawn", () => {});
+    // cmd.stdin.on("error", (err) => {
+    //   reject({ msg: "on stdin error", error: `${err}` });
+    // });
+    // cmd.stdin.write(testInput);
+    // cmd.stdin.end();
+    // cmd.stderr.on("data", (data) => {
+    //   reject({ msg: "on stderr", stderr: `${data}` });
+    // });
+    // cmd.stdout.on("data", (data) => {
+    //   const exOut = `${data}`.trim();
+    //   resolve(exOut);
+    // });
+    // cmd.on("exit", (exitCode, signal) => {});
+    // cmd.on("error", (error) => {
+    //   reject({ msg: "on error", error: `${error.name} => ${error.message}` });
+    // });
+    // cmd.on("close", (code) => {
+    //   // logger.log(`child process exited with code ${code} `);
+    //   resolve("");
+    // });
   });
 };
 
@@ -173,7 +181,7 @@ ${exOut}`;
 const languageErrMsg = `Please select a language / valid language.
 Or may be this language is not yet supported !`;
 
-const execCodeAgainstTestcases = async (filePath, testcase, language) => {
+const execCodeAgainstTestcases = (filePath, testcase, language) => {
   // check if language is supported or not
   if (!details[language]) return { msg: languageErrMsg };
 
@@ -196,14 +204,7 @@ const execCodeAgainstTestcases = async (filePath, testcase, language) => {
             : input[index],
           language
         );
-const ans = await executeCmd(
-          compiledId,
-          details[language].inputFunction
-            ? details[language].inputFunction(input[index])
-            : input[index],
-          language
-        );
-        logger.log("with exec output is " ,ans)
+
         if (exOut !== output[index]) {
           reject({
             msg: "on wrong answer",
