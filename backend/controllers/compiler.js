@@ -1,14 +1,12 @@
 const express = require("express");
 const os = require("os");
-const { errorToJSON, exec } = require("../routes/global");
+const { errorToJSON, execm } = require("../routes/global");
 const fs = require("fs");
 const path = require("path");
 
 const runJava = async (filepath, fileName, stdin) => {
-  const inputDir =
-    "./controller/Codes/";
-  const inputFilePath =
-    "./controller/Codes/input.txt";
+  const inputDir = "./controller/Codes/";
+  const inputFilePath = "./controller/Codes/input.txt";
 
   await fs.writeFileSync(`${inputFilePath}`, stdin);
   console.log(path.resolve(__filename));

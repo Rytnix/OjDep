@@ -1,7 +1,7 @@
 const util = require("util");
 
 const child_process = require("child_process");
-const exec = util.promisify(child_process.exec);
+const execm = util.promisify(child_process.exec);
 
 const fs = require("fs");
 const readFileAsync = util.promisify(fs.readFile);
@@ -27,7 +27,7 @@ const importAll = () => {
 };
 
 module.exports = {
-  exec,
+  execm,
   errorToJSON,
   importAll,
   fs: {

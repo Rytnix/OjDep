@@ -1,10 +1,11 @@
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const { v4: uuid } = require("uuid");
 const { dateTimeNowFormated, logger } = require("../utils");
 const { exec, spawn } = require("child_process");
 const { log } = require("console");
-
+const { errorToJSON, execm } = require("../routes/global");
 const codeDirectory = path.join(__dirname, "codeFiles");
 
 const details = {
@@ -136,7 +137,20 @@ ${exOut}`;
 
 const languageErrMsg = `Please select a language / valid language.
 Or may be this language is not yet supported !`;
+const runCode = async (id, testInput, language) => {
+  const command = details[language].executorCmd
+    ? details[language].executorCmd(id)
+    : null;
+  const tempFileName = path.join(os.tmpdir(), `tempfile_${Date.now()}.txt`);
+  fs.writeFileSync(tempFileName, testInput, "utf-8");
+  const result = await execm(`${command} < ${tempFileName}`);
+  fs.unlinkSync(tempFileName);
 
+  if (result.stderr)
+    return { msg: "on stdin error", error: `${result.stderr}` };
+
+  return result.stdout.trim();
+};
 const execCodeAgainstTestcases = (filePath, testcase, language) => {
   // check if language is supported or not
   if (!details[language]) return { msg: languageErrMsg };
@@ -153,13 +167,23 @@ const execCodeAgainstTestcases = (filePath, testcase, language) => {
       const compiledId = await compile(filename, language);
 
       for (let index = 0; index < input.length; ++index) {
-        const exOut = await execute(
+        // const exOut = await execute(
+        //   compiledId,
+        //   details[language].inputFunction
+        //     ? details[language].inputFunction(input[index])
+        //     : input[index],
+        //   language
+        // );
+        const exOut = await runCode(
           compiledId,
           details[language].inputFunction
             ? details[language].inputFunction(input[index])
             : input[index],
           language
         );
+
+        logger.log("I am printing ans", exOut);
+
         if (exOut !== output[index]) {
           reject({
             msg: "on wrong answer",
