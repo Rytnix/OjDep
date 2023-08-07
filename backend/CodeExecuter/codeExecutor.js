@@ -69,11 +69,15 @@ const execute = (id, testInput, language) => {
   const command = details[language].executorCmd
     ? details[language].executorCmd(id)
     : null;
-    logger.log("i am on ",id,testInput,language,command)
-     
+  logger.log("i am on ", id, testInput, language, command);
+
   return new Promise((resolve, reject) => {
     if (!command) return reject("Language Not Supported");
     const cmd = spawn(command, { shell: true });
+    cmd.stdout.on("data", (data) => {
+      const exOut = `${data}`.trim();
+      resolve(exOut);
+    });
     cmd.on("spawn", () => {});
     cmd.stdin.on("error", (err) => {
       reject({ msg: "on stdin error", error: `${err}` });
@@ -83,11 +87,10 @@ const execute = (id, testInput, language) => {
     cmd.stderr.on("data", (data) => {
       reject({ msg: "on stderr", stderr: `${data}` });
     });
-    cmd.stdout.on("data", (data) => {
-      const exOut = `${data}`.trim();
-      resolve(exOut);
+
+    cmd.on("exit", (exitCode, signal) => {
+      logger.log("hello from exit");
     });
-    cmd.on("exit", (exitCode, signal) => {});
     cmd.on("error", (error) => {
       reject({ msg: "on error", error: `${error.name} => ${error.message}` });
     });
@@ -97,10 +100,6 @@ const execute = (id, testInput, language) => {
     });
   });
 };
-
-
-
-
 
 if (!fs.existsSync(codeDirectory)) {
   fs.mkdirSync(codeDirectory, { recursive: true });
@@ -266,4 +265,3 @@ module.exports = {
   execCodeAgainstTestcases,
   initAllDockerContainers,
 };
-
